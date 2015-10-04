@@ -85,7 +85,11 @@ def testModel(conditionalProbabilityDict, columnarTrainingVector, columnarTestVe
             
             for eachFeature in columnarTestVector[:-1]:
                 key = 'P(%s=%s|%s=%s)' % (eachFeature.getName(), eachFeature.getData()[i], columnarTestVector[-1].getName(), eachClassLabel)
-                probXGivenY *= conditionalProbabilityDict[key]
+                if key in conditionalProbabilityDict.keys():
+                    probXGivenY *= conditionalProbabilityDict[key]
+                else:
+                    # TODO I DUNNO IF DOING THIS IS CORRECT
+                    probXGivenY *= 0
             likelihoodList[eachClassLabel] = probXGivenY
         print likelihoodList
         predictedResults.append(max(likelihoodList.iteritems(), key=operator.itemgetter(1))[0])
