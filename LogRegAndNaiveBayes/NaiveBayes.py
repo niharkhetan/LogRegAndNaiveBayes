@@ -51,6 +51,9 @@ def computeConditionalProbability(feature, classLabel, laplacianCorrection = Fal
     return probDict 
         
 def trainModel(vector):
+    '''
+    Generates a list of conditional probabilities for given setof features against the class label
+    '''
     columnarVector = convertVectorToColumnar(vector)
     priorProbTrue = columnarVector[-1].getDiscreteSet()['1'] / float(columnarVector[-1].getDiscreteSet()['1'] + columnarVector[-1].getDiscreteSet()['0']) 
     priorProbFalse = columnarVector[-1].getDiscreteSet()['0'] / float(columnarVector[-1].getDiscreteSet()['1'] + columnarVector[-1].getDiscreteSet()['0'])
@@ -68,7 +71,9 @@ def trainModel(vector):
     return conditionalProbabilityDict
 
 def testModel(conditionalProbabilityDict, columnarTrainingVector, columnarTestVector):
-    
+    '''
+    gets all the conditional probabilities generated and computes a list of predicted values
+    '''
  
     #iterates each row in test data
     predictedResults = []
