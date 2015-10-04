@@ -89,7 +89,13 @@ def testModel(conditionalProbabilityDict, columnarTrainingVector, columnarTestVe
                     probXGivenY *= conditionalProbabilityDict[key]
                 else:
                     # TODO I DUNNO IF DOING THIS IS CORRECT
-                    probXGivenY *= 0
+                    
+                    # get laplacian correction for the same feature in trainig set
+                    lapCorrectionValue = 0
+                    for feature in columnarTrainingVector:
+                        if feature.getName() == eachFeature.getName():                            
+                            lapCorrectionValue = 1 / float(len(feature.getDiscreteSet().keys()))
+                    probXGivenY *= lapCorrectionValue
             likelihoodList[eachClassLabel] = probXGivenY
         print likelihoodList
         predictedResults.append(max(likelihoodList.iteritems(), key=operator.itemgetter(1))[0])
