@@ -54,9 +54,7 @@ def trainModel(vector):
     '''
     Generates a list of conditional probabilities for given setof features against the class label
     '''
-    columnarVector = convertVectorToColumnar(vector)
-    priorProbTrue = columnarVector[-1].getDiscreteSet()['1'] / float(columnarVector[-1].getDiscreteSet()['1'] + columnarVector[-1].getDiscreteSet()['0']) 
-    priorProbFalse = columnarVector[-1].getDiscreteSet()['0'] / float(columnarVector[-1].getDiscreteSet()['1'] + columnarVector[-1].getDiscreteSet()['0'])
+    columnarVector = convertVectorToColumnar(vector)    
     probList = []
     
     for eachFeature in columnarVector:
@@ -70,11 +68,12 @@ def trainModel(vector):
     
     return conditionalProbabilityDict
 
-def testModel(conditionalProbabilityDict, columnarTrainingVector, columnarTestVector):
+def testModel(conditionalProbabilityDict, columnarTrainingVector, columnarTestVector, laplacianCorrection = False):
     '''
     gets all the conditional probabilities generated and computes a list of predicted values
     '''
- 
+    priorProbTrue = columnarTrainingVector[-1].getDiscreteSet()['1'] / float(columnarTrainingVector[-1].getDiscreteSet()['1'] + columnarTrainingVector[-1].getDiscreteSet()['0']) 
+    priorProbFalse = columnarTrainingVector[-1].getDiscreteSet()['0'] / float(columnarTrainingVector[-1].getDiscreteSet()['1'] + columnarTrainingVector[-1].getDiscreteSet()['0'])
     #iterates each row in test data
     predictedResults = []
     for i in range(0, len(columnarTestVector[0].getData())):
@@ -82,14 +81,19 @@ def testModel(conditionalProbabilityDict, columnarTrainingVector, columnarTestVe
         likelihoodList = {} 
         for eachClassLabel in columnarTrainingVector[-1].getDiscreteSet().keys():
             probXGivenY = 1
+            if laplacianCorrection:
+                priorProbGivenLabel = (columnarTrainingVector[-1].getDiscreteSet()[eachClassLabel] + 1)/ float(len(columnarTrainingVector[-1].getData()) + len(columnarTrainingVector[-1].getDiscreteSet().keys()))
+            else:
+                priorProbGivenLabel = columnarTrainingVector[-1].getDiscreteSet()[eachClassLabel] / float(len(columnarTrainingVector[-1].getData()))
             
+            probXGivenY *= priorProbGivenLabel
             for eachFeature in columnarTestVector[:-1]:
+                 
                 key = 'P(%s=%s|%s=%s)' % (eachFeature.getName(), eachFeature.getData()[i], columnarTestVector[-1].getName(), eachClassLabel)
                 if key in conditionalProbabilityDict.keys():
                     probXGivenY *= conditionalProbabilityDict[key]
                 else:
-                    # TODO I DUNNO IF DOING THIS IS CORRECT
-                    
+                    # TODO I DUNNO IF DOING THIS IS CORRECT                    
                     # get laplacian correction for the same feature in trainig set
                     lapCorrectionValue = 0
                     for feature in columnarTrainingVector:
@@ -101,16 +105,12 @@ def testModel(conditionalProbabilityDict, columnarTrainingVector, columnarTestVe
         predictedResults.append(max(likelihoodList.iteritems(), key=operator.itemgetter(1))[0])
     
     return predictedResults
-                
-                
-  
-            
 
 if __name__ == '__main__':
     training_data = "BuyCondodataSet.csv"
     test_data = "BuyCondodataSetTest.csv"
-    training_data = "zoo-train.csv"
-    test_data = "zoo-test.csv"
+    #training_data = "zoo-train.csv"
+    #test_data = "zoo-test.csv"
     trainingVector = readFileAsVector(training_data)
     columnarTrainingVector = convertVectorToColumnar(trainingVector)
     testVector = readFileAsVector(test_data)    
@@ -119,7 +119,7 @@ if __name__ == '__main__':
     
     condPList = trainModel(trainingVector)
     expectedResults = columnarTestVector[-1].getData()
-    predictedResults = testModel(condPList, columnarTrainingVector, columnarTestVector)
+    predictedResults = testModel(condPList, columnarTrainingVector, columnarTestVector, True)
     
     # Evaluation 
         
