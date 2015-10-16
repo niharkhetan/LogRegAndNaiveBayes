@@ -65,7 +65,7 @@ def trainModel(vector):
     for eachDict in probList:
         for k,v in eachDict.iteritems():
             conditionalProbabilityDict[k] = v
-    
+    print conditionalProbabilityDict
     return conditionalProbabilityDict
 
 def testModel(conditionalProbabilityDict, columnarTrainingVector, columnarTestVector, laplacianCorrection = False):
@@ -107,10 +107,10 @@ def testModel(conditionalProbabilityDict, columnarTrainingVector, columnarTestVe
     return predictedResults
 
 if __name__ == '__main__':
-    training_data = "BuyCondodataSet.csv"
-    test_data = "BuyCondodataSetTest.csv"
-    #training_data = "zoo-train.csv"
-    #test_data = "zoo-test.csv"
+    #training_data = "BuyCondodataSet.csv"
+    #test_data = "BuyCondodataSetTest.csv"
+    training_data = "zoo-train.csv"
+    test_data = "zoo-test.csv"
     trainingVector = readFileAsVector(training_data)
     columnarTrainingVector = convertVectorToColumnar(trainingVector)
     testVector = readFileAsVector(test_data)    
