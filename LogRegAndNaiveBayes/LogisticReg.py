@@ -30,9 +30,9 @@ def findSigmoidWX(w,x):
 def findNorm(vector):
     norm = 0
     for point in vector:
-        norm += math.sqrt(point*point)
+        norm += point*point
     
-    return norm
+    return math.sqrt(norm)
     
 
 def trainModel(vector):
