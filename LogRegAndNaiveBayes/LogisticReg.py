@@ -54,7 +54,7 @@ def trainModel(vector):
     #print w
     wItalic = 0
     wChange = 1000
-    while(wChange != 0.0001):
+    while(wChange != 0):
         #initializing gradient vector
         wNot = deepcopy(w)
         for i in range(0, len(vector[0]) - 1):
