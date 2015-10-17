@@ -72,7 +72,7 @@ def trainModel(vector):
             #print g
             
             for k in range(0,len(w)):
-                w[k] += 0.001*g[k]
+                w[k] += 0.0001*g[k]
         wChange = findNorm(w) - findNorm(wNot)
         print wChange
         #print error
