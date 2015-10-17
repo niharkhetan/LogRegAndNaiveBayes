@@ -8,6 +8,7 @@ from Bean.Feature import Feature
 from Evaluation.Metrics import *
 import operator
 import math
+from copy import deepcopy
 
 
 def findSigmoidWX(w,x):
@@ -16,10 +17,23 @@ def findSigmoidWX(w,x):
         wx += int(w[i])*int(x[i])
     wx *= -1
     #print wx
-    e = math.exp(wx)
+    #print "HERE"
+    #print wx
+    #Using Try to avoid overflow of range; When e to power gets very large it is equivalent to infinity
+    try :
+        e = math.exp(wx)
+    except :
+        e = 0
     sigmoid = 1 / float(1 + e)
     return sigmoid
           
+def findNorm(vector):
+    norm = 0
+    for point in vector:
+        norm += math.sqrt(point*point)
+    
+    return norm
+    
 
 def trainModel(vector):
     '''
@@ -39,13 +53,14 @@ def trainModel(vector):
     #print vector
     #print w
     wItalic = 0
-    error = 1000
-    while(error != 0.0001):
+    wChange = 1000
+    while(wChange != 0.0001):
         #initializing gradient vector
+        wNot = deepcopy(w)
         for i in range(0, len(vector[0]) - 1):
             g.append(0)
         
-    
+        
         for eachPoint in vector[1:]:
             #print eachPoint
             pOfi = findSigmoidWX(w, eachPoint[:-1])
@@ -58,7 +73,9 @@ def trainModel(vector):
             
             for k in range(0,len(w)):
                 w[k] += 0.001*g[k]
-        print error
+        wChange = findNorm(w) - findNorm(wNot)
+        print wChange
+        #print error
         print w        
         
 

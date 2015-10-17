@@ -92,9 +92,8 @@ def testModel(conditionalProbabilityDict, columnarTrainingVector, columnarTestVe
                 key = 'P(%s=%s|%s=%s)' % (eachFeature.getName(), eachFeature.getData()[i], columnarTestVector[-1].getName(), eachClassLabel)
                 if key in conditionalProbabilityDict.keys():
                     probXGivenY *= conditionalProbabilityDict[key]
-                else:
-                    # TODO I DUNNO IF DOING THIS IS CORRECT                    
-                    # get laplacian correction for the same feature in trainig set
+                else:                                   
+                    # get laplacian correction for the same feature in training set
                     lapCorrectionValue = 0
                     for feature in columnarTrainingVector:
                         if feature.getName() == eachFeature.getName():                            
