@@ -13,15 +13,12 @@ from copy import deepcopy
 
 def findSigmoidWX(w,x):
     wx = 0   
-    for i in range(0,len(w)):        
-        wx += int(w[i])*int(x[i])
-    wx *= -1
-    #print wx
-    #print "HERE"
-    #print wx
+
+    for i in range(len(w)):        
+        wx += float(w[i])*float(x[i])
     #Using Try to avoid overflow of range; When e to power gets very large it is equivalent to infinity
     try :
-        e = math.exp(wx)
+        e = math.exp(-wx)
     except :
         e = 0
     sigmoid = 1 / float(1 + e)
@@ -39,64 +36,111 @@ def trainModel(vector):
     '''
     Generates a list of conditional probabilities for given setof features against the class label
     '''
-    #columnarVector = convertVectorToColumnar(vector)    
-    #probList = []
-    w = []
-    g = []
-    #initializing w weight vector
-    #initializing gradient vector
-    for i in range(0, len(vector[0]) - 1):
-        w.append(0)
+
+    print "\n\tTraining Model .",
+    # Initializing parameters
+    eta = 0.001
+    prec = 5
+    convergenceThreshold = 0.001
+    formatPrintCount = 0
+
+    # Initializing w weight vector to 0 for every feature
+    w = [0]*(len(vector[0])-1)
     
+    # Transformations for Training examples and Weight vector
+    
+    # Transforming the training examples to canonical representation <1,x1,x2,..,xN>
     for eachPoint in vector:
-        eachPoint.insert(0,0)
-    #print vector
-    #print w
-    wItalic = 0
-    wChange = 1000
-    while(wChange != 0):
-        #initializing gradient vector
-        wNot = deepcopy(w)
-        for i in range(0, len(vector[0]) - 1):
-            g.append(0)
+        eachPoint.insert(0,1)
+    
+    # Adding 0 to weight vector at index 0
+    w.insert(0,0)
+    
+    # Repeat until convergence
+    while True:
         
-        
+        # Save old Weight vector to check for convergence
+        wOld = deepcopy(w)
+
+        #initializing gradient vector    
+        g = [0]*(len(vector[0])-1)
+            
         for eachPoint in vector[1:]:
-            #print eachPoint
+            #pi = 1 /( 1 * exp[ w.xi])
             pOfi = findSigmoidWX(w, eachPoint[:-1])
-            #print pOfi
+            
+            #error=yi - pi
             error = int(eachPoint[-1]) - pOfi
            
             for j in range(0, len(eachPoint) - 1):
                 g[j] = g[j] + error*int(eachPoint[j])
-            #print g
             
             for k in range(0,len(w)):
-                w[k] += 0.0001*g[k]
-        wChange = findNorm(w) - findNorm(wNot)
-        print wChange
-        #print error
-        print w        
+                w[k] += eta*g[k]
+                
+        wChange = round(findNorm(w) - findNorm(wOld),prec)
         
+        if wChange <= convergenceThreshold:
+            break
+        
+        formatPrintCount +=1
+        if formatPrintCount % 100 == 0:
+            print ".",
+            
+    return w
 
+def predictLabelBasedOnThreshold(dataPoint, weightVec):
+    
+    thresholdCheck = 0
+    
+    for i in range(len(dataPoint)):
+        thresholdCheck += float(dataPoint[i]) * float(weightVec[i]) 
+    
+    if thresholdCheck < 0.5:
+        return 0
+    else:
+        return 1
+        
+def testModel(vector, weightVec):
+    
+    print "\n\n\tTesting Model .",
+    formatPrintCount = 0
+    
+    predictedLabels = []
+    for dataPoint in vector[1:]:    
+        # Transforming the test datapoints to canonical representation <1,x1,x2,..,xN>
+        dataPoint.insert(0,1)
+        predictedLabels.append(predictLabelBasedOnThreshold(dataPoint[:-1], weightVec))
+        
+        formatPrintCount +=1
+        if formatPrintCount % 10 == 0:
+            print ".",
+            
+    print "\n"
+    return predictedLabels
 
 if __name__ == '__main__':
-    #training_data = "BuyCondodataSet.csv"
-    #test_data = "BuyCondodataSetTest.csv"
+    
+    print "=" * 90
+    print "\t\t\tWelcome to Logistic Regression Modeler"
+    print "=" * 90
+
+
     training_data = "zoo-train.csv"
     test_data = "zoo-test.csv"
+    
     trainingVector = readFileAsVector(training_data)
-    trainModel(trainingVector)
-    
-    '''
-    columnarTrainingVector = convertVectorToColumnar(trainingVector)
     testVector = readFileAsVector(test_data)    
-    columnarTestVector = convertVectorToColumnar(testVector)
+
+    weightVec = trainModel(trainingVector)
     
+    expectedResults = []
     
-    condPList = trainModel(trainingVector)
-    expectedResults = columnarTestVector[-1].getData()
-    predictedResults = testModel(condPList, columnarTrainingVector, columnarTestVector, True)
+    for dataPoint in testVector[1:]:
+        expectedResults.append(int(dataPoint[-1]))
+        
+    predictedResults = testModel(testVector,weightVec)
+    
     
     # Evaluation 
         
@@ -106,7 +150,8 @@ if __name__ == '__main__':
     #Confusion Matrix
     confusionMatrix = constructConfusionMatrix(predictedResults, expectedResults)
     printConfusionMatrix(confusionMatrix)
-    '''
-    
-    
+
+    print "\n\n","-" * 90
+    print "\t\tThank you for using the Logistic Regression Modeler"
+    print "-" * 90,"\n\n"
     

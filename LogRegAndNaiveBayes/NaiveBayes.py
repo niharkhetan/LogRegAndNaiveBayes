@@ -54,24 +54,37 @@ def trainModel(vector):
     '''
     Generates a list of conditional probabilities for given setof features against the class label
     '''
+    
+    print "\n\tTraining Model .",
+    formatPrintCount = 0
+    
     columnarVector = convertVectorToColumnar(vector)    
     probList = []
     
     for eachFeature in columnarVector:
         probList.append(computeConditionalProbability(eachFeature, columnarVector[-1], True))
+        if formatPrintCount % 10 == 0:
+            print ".",
+            
+    print "\n"
    
     conditionalProbabilityDict = {}
     
     for eachDict in probList:
         for k,v in eachDict.iteritems():
             conditionalProbabilityDict[k] = v
-    print conditionalProbabilityDict
+        formatPrintCount +=1
+        
+    #print conditionalProbabilityDict
     return conditionalProbabilityDict
 
 def testModel(conditionalProbabilityDict, columnarTrainingVector, columnarTestVector, laplacianCorrection = False):
     '''
     gets all the conditional probabilities generated and computes a list of predicted values
     '''
+    print "\n\tTesting Model .",
+    formatPrintCount = 0
+    
     priorProbTrue = columnarTrainingVector[-1].getDiscreteSet()['1'] / float(columnarTrainingVector[-1].getDiscreteSet()['1'] + columnarTrainingVector[-1].getDiscreteSet()['0']) 
     priorProbFalse = columnarTrainingVector[-1].getDiscreteSet()['0'] / float(columnarTrainingVector[-1].getDiscreteSet()['1'] + columnarTrainingVector[-1].getDiscreteSet()['0'])
     #iterates each row in test data
@@ -100,12 +113,22 @@ def testModel(conditionalProbabilityDict, columnarTrainingVector, columnarTestVe
                             lapCorrectionValue = 1 / float(len(feature.getDiscreteSet().keys()))
                     probXGivenY *= lapCorrectionValue
             likelihoodList[eachClassLabel] = probXGivenY
-        print likelihoodList
+        #print likelihoodList
         predictedResults.append(max(likelihoodList.iteritems(), key=operator.itemgetter(1))[0])
+        formatPrintCount +=1
+        if formatPrintCount % 10 == 0:
+            print ".",
+            
+    print "\n"
     
     return predictedResults
 
 if __name__ == '__main__':
+    
+    print "=" * 90
+    print "\t\t\tWelcome to Naive Bayes Modeler"
+    print "=" * 90
+
     #training_data = "BuyCondodataSet.csv"
     #test_data = "BuyCondodataSetTest.csv"
     training_data = "zoo-train.csv"
@@ -129,5 +152,8 @@ if __name__ == '__main__':
     confusionMatrix = constructConfusionMatrix(predictedResults, expectedResults)
     printConfusionMatrix(confusionMatrix)
     
+    print "\n\n","-" * 90
+    print "\t\tThank you for using the Naive Bayes Modeler"
+    print "-" * 90,"\n\n"
     
     
