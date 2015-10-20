@@ -148,7 +148,10 @@ if __name__ == '__main__':
         
     #Accuracy
     findAccuracy(predictedResults, expectedResults)
-    
+    for i in range(0,len(predictedResults)):
+        predictedResults[i] = int(predictedResults[i])
+        expectedResults[i] = int(expectedResults[i])
+
     #Confusion Matrix
     confusionMatrix = constructConfusionMatrix(predictedResults, expectedResults)
     printConfusionMatrix(confusionMatrix)
