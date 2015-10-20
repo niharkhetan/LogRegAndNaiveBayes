@@ -1,17 +1,19 @@
 '''
 Created on Oct 4, 2015
 
-@author: NiharKhetan
+@author  : NiharKhetan, Ghanshyam Malu
+@desc    : Logistic Regression Modeler
+ 
 '''
 from DataParser.ReadCSV import readFileAsVector
 from Bean.Feature import Feature
 from Evaluation.Metrics import *
-import operator
 import math
 from copy import deepcopy
 
 
 def findSigmoidWX(w,x):
+    ''' Find the sigmoid function '''
     wx = 0   
 
     for i in range(len(w)):        
@@ -25,6 +27,7 @@ def findSigmoidWX(w,x):
     return sigmoid
           
 def findNorm(vector):
+    ''' Find the normal of the vector'''
     norm = 0
     for point in vector:
         norm += point*point
@@ -34,7 +37,7 @@ def findNorm(vector):
 
 def trainModel(vector):
     '''
-    Generates a list of conditional probabilities for given setof features against the class label
+    Trains the Logistic Regression model
     '''
 
     print "\n\tTraining Model .",
@@ -47,8 +50,8 @@ def trainModel(vector):
     # Initializing w weight vector to 0 for every feature
     w = [0]*(len(vector[0])-1)
     
-    # Transformations for Training examples and Weight vector
-    
+    #### Transformations for Training examples and Weight vector
+
     # Transforming the training examples to canonical representation <1,x1,x2,..,xN>
     for eachPoint in vector:
         eachPoint.insert(0,1)
@@ -90,6 +93,7 @@ def trainModel(vector):
     return w
 
 def predictLabelBasedOnThreshold(dataPoint, weightVec):
+    ''' Predicts a class label based on threshold '''
     
     thresholdCheck = 0
     
@@ -102,6 +106,7 @@ def predictLabelBasedOnThreshold(dataPoint, weightVec):
         return 1
         
 def testModel(vector, weightVec):
+    ''' Test the model '''
     
     print "\n\n\tTesting Model .",
     formatPrintCount = 0
@@ -142,7 +147,7 @@ if __name__ == '__main__':
     predictedResults = testModel(testVector,weightVec)
     
     
-    # Evaluation 
+    ################ Evaluation ############### 
         
     #Accuracy
     findAccuracy(predictedResults, expectedResults)

@@ -1,7 +1,9 @@
 '''
 Created on Oct 4, 2015
 
-@author: NiharKhetan
+@author  : NiharKhetan, Ghanshyam Malu
+@desc    : Naive Bayes Modeler
+ 
 '''
 from DataParser.ReadCSV import readFileAsVector
 from Bean.Feature import Feature
@@ -75,7 +77,6 @@ def trainModel(vector):
             conditionalProbabilityDict[k] = v
         formatPrintCount +=1
         
-    #print conditionalProbabilityDict
     return conditionalProbabilityDict
 
 def testModel(conditionalProbabilityDict, columnarTrainingVector, columnarTestVector, laplacianCorrection = False):
@@ -113,7 +114,7 @@ def testModel(conditionalProbabilityDict, columnarTrainingVector, columnarTestVe
                             lapCorrectionValue = 1 / float(len(feature.getDiscreteSet().keys()))
                     probXGivenY *= lapCorrectionValue
             likelihoodList[eachClassLabel] = probXGivenY
-        #print likelihoodList
+        
         predictedResults.append(max(likelihoodList.iteritems(), key=operator.itemgetter(1))[0])
         formatPrintCount +=1
         if formatPrintCount % 10 == 0:
@@ -143,7 +144,7 @@ if __name__ == '__main__':
     expectedResults = columnarTestVector[-1].getData()
     predictedResults = testModel(condPList, columnarTrainingVector, columnarTestVector, True)
     
-    # Evaluation 
+    ############ Evaluation ########### 
         
     #Accuracy
     findAccuracy(predictedResults, expectedResults)
