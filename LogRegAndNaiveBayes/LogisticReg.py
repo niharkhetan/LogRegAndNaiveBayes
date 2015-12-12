@@ -76,7 +76,7 @@ def trainModel(vector):
             error = int(eachPoint[-1]) - pOfi
            
             for j in range(0, len(eachPoint) - 1):
-                g[j] = g[j] + error*int(eachPoint[j])
+                g[j] = g[j] + error*float(eachPoint[j])
             
             for k in range(0,len(w)):
                 w[k] += eta*g[k]
@@ -131,8 +131,8 @@ if __name__ == '__main__':
     print "=" * 90
 
 
-    training_data = "zoo-train.csv"
-    test_data = "zoo-test.csv"
+    training_data = "train_dataset_7_balanced_normalized.csv"
+    test_data = "test_dataset_7_balanced_normalized.csv"
     
     trainingVector = readFileAsVector(training_data)
     testVector = readFileAsVector(test_data)    
