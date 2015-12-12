@@ -133,6 +133,9 @@ if __name__ == '__main__':
 
     training_data = "train_dataset_7_balanced_normalized.csv"
     test_data = "test_dataset_7_balanced_normalized.csv"
+
+    training_data = "train_dataset_8_unbalanced_normalized.csv"
+    test_data = "test_dataset_8_unbalanced_normalized.csv"
     
     trainingVector = readFileAsVector(training_data)
     testVector = readFileAsVector(test_data)    
